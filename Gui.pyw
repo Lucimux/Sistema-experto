@@ -2,7 +2,7 @@ import sys, re
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QPushButton
 from PyQt5 import uic
 from Paciente import Paciente
-from Diagnostico import DiagnosTicoEngine, DatosPaciente
+from Diagnostico import DiagnosTicoEngine, DatosPaciente, NuevoPaciente
 class SistemaExpertoGUI(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -16,6 +16,7 @@ class SistemaExpertoGUI(QMainWindow):
             event.accept()
         else:
             event.ignore()
+
     def validar_nombre(self): 
         nombre = self.nombre.text()
         validar = re.match('^[a-zA-Z\s]+$',nombre,re.I)
@@ -28,6 +29,7 @@ class SistemaExpertoGUI(QMainWindow):
         else: 
             self.nombre.setStyleSheet("border: 1px solid black;")            
             return True
+            
     def generoValue(self):
         if self.masculino.isChecked():
             return "masculino"
@@ -46,13 +48,23 @@ class SistemaExpertoGUI(QMainWindow):
         circunferencia_mun = float(self.circunferencia_mun.text())
         sexo = self.generoValue()
         paciente = Paciente(nombre,sexo,edad,estatura,cintura,cadera,peso_actual,peso_habitual,perimetro_abdominal,circunferencia_mun)
-        #print(paciente)
         algo = DiagnosTicoEngine()
         algo.reset()
         algo.GenerarDatos()
-        #algo.declare(DatosPaciente(sexo='masculino',peso='95',edad='25',estatura="1,88",cintura='99',cadera='110',pesoTeoIdeal="75,9896",cincunfMun='19',porPesoTeorico="125,0171076",icc="0,9",porPesoHabit="9,894736842",complexion='COMPLEXION MEDIANA',antecedentes='sobrepeso',ejercicio='no'))
-        algo.declare(DatosPaciente(sexo=paciente.sexo))
-        #algo.declare(DatosPaciente(sexo="femenino"))
+        algo.declare(
+            NuevoPaciente(
+                sexo=paciente.sexo,
+                nombre=paciente.nombre,
+                edad=paciente.edad,
+                estatura=paciente.estatura,
+                cintura=paciente.cintura,
+                cadera=paciente.cadera,
+                pesoActual=paciente.pesoActual,
+                perimetroAbd=paciente.perimetroAbdominal,
+                circfMun=paciente.circunfMun,
+                pesoHabit=paciente.pesoHabitual
+            )
+        )
         algo.run()
         print(algo.facts)
 
